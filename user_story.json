@@ -1,10 +1,10 @@
 {
-  validations: [
+  "validations": [
     {
-      name: "form_nl",
-      description: "Checks if user story is in correct NL form",
-      regex: "^\\s*Als\\b.+\\bwil ik\\b.+\\b(zodat|omdat)\\b.+",
-      flags: "i"
+      "name": "form_nl",
+      "description": "Checks if user story is in correct NL form",
+      "regex": "^\\s*Als\\b.+\\bwil ik\\b.+\\b(zodat|omdat)\\b.+",
+      "flags": "i"
     }
   ]
 }
