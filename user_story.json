@@ -2,9 +2,18 @@
   "validations": [
     {
       "name": "form_nl",
-      "description": "Checks if user story is in correct NL form",
+      "description": "Checks if user story is in correct NL form.",
       "regex": "^\\s*Als\\b.+\\bwil ik\\b.+\\b(zodat|omdat)\\b.+",
       "flags": "i"
+    }
+  ],
+  "beautifiers": [
+    {
+      "name": "trim",
+      "description": "Remove leading and trailing whitespace.",
+      "regex": "^\\s*(.*)\\s*$",
+      "flags": "",
+      "replace": "$1"
     }
   ]
 }
