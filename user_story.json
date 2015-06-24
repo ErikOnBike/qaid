@@ -11,7 +11,7 @@
     {
       "name": "trim",
       "description": "Remove leading and trailing whitespace.",
-      "regex": "^\\s*(.*)\\s*$",
+      "regex": "^\\s*(.*\S)\\s*$",
       "flags": "",
       "replace": "$1"
     }
