@@ -4,7 +4,6 @@
 // @description	Aid for QA
 // @include	https://jira.lrgirko.nl/jira/*
 // @version	0.1
-// @required	http://code.jquery.com/jquery-2.1.4.min.js
 // @grant	none
 // ==/UserScript==
 
