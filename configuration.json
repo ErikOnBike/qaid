@@ -31,7 +31,8 @@
   "ltc": {
     "validations": [],
     "beautifiers": [
-      { "name": "trim" }
+      { "name": "trim" },
+      { "name": "capitalize" }
     ]
   }
 }
