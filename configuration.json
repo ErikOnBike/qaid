@@ -1,4 +1,20 @@
 {
+  "beautifiers": [
+      {
+        "name": "trim",
+        "description": "Remove leading and trailing whitespace.",
+        "regex": "^\\s*(.*\\S)\\s*$",
+        "flags": "",
+        "replace": "$1"
+      },
+      {
+        "name": "capitalize",
+        "description": "Capitalize first character.",
+        "regex": "^(.)(.*)$",
+        "flags": "",
+        "replace": "$U1$2"
+      }
+  ],
   "userStory": {
     "validations": [
       {
@@ -9,25 +25,13 @@
       }
     ],
     "beautifiers": [
-      {
-        "name": "trim",
-        "description": "Remove leading and trailing whitespace.",
-        "regex": "^\\s*(.*\\S)\\s*$",
-        "flags": "",
-        "replace": "$1"
-      }
+      { "name": "trim" }
     ]
   },
   "ltc": {
     "validations": [],
     "beautifiers": [
-      {
-        "name": "trim",
-        "description": "Remove leading and trailing whitespace.",
-        "regex": "^\\s*(.*\\S)\\s*$",
-        "flags": "",
-        "replace": "$1"
-      }
+      { "name": "trim" }
     ]
   }
 }
