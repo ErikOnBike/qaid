@@ -1,19 +1,33 @@
 {
-  "validations": [
-    {
-      "name": "form_nl",
-      "description": "Checks if user story is in correct NL form.",
-      "regex": "^\\s*Als\\b.+\\bwil ik\\b.+\\b(zodat|omdat)\\b.+",
-      "flags": "i"
-    }
-  ],
-  "beautifiers": [
-    {
-      "name": "trim",
-      "description": "Remove leading and trailing whitespace.",
-      "regex": "^\\s*(.*\\S)\\s*$",
-      "flags": "",
-      "replace": "$1"
-    }
-  ]
+  "user_story": {
+    "validations": [
+      {
+        "name": "form_nl",
+        "description": "Checks if user story is in correct NL form.",
+        "regex": "^\\s*Als\\b.+\\bwil ik\\b.+\\b(zodat|omdat)\\b.+",
+        "flags": "i"
+      }
+    ],
+    "beautifiers": [
+      {
+        "name": "trim",
+        "description": "Remove leading and trailing whitespace.",
+        "regex": "^\\s*(.*\\S)\\s*$",
+        "flags": "",
+        "replace": "$1"
+      }
+    ]
+  },
+  "ltc": {
+    "validations": [],
+    "beautifiers": [
+      {
+        "name": "trim",
+        "description": "Remove leading and trailing whitespace.",
+        "regex": "^\\s*(.*\\S)\\s*$",
+        "flags": "",
+        "replace": "$1"
+      }
+    ]
+  }
 }
