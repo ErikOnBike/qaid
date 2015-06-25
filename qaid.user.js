@@ -1,10 +1,11 @@
 // ==UserScript==
-// @name        QAID
-// @namespace   Jira
-// @description Aid for QA
-// @include     https://jira.lrgirko.nl/jira/*
-// @version     0.1
-// @grant       none
+// @name	QAID
+// @namespace	Jira
+// @description	Aid for QA
+// @include	https://jira.lrgirko.nl/jira/*
+// @version	0.1
+// @required	http://code.jquery.com/jquery-2.1.4.min.js
+// @grant	none
 // ==/UserScript==
 
 // Show presence
@@ -28,16 +29,16 @@ var QAID_MESSAGE_ID = "qaidMessage";
 var QAID_BEAUTIFIER_ID = "qaidBeatifierButton";
 
 // Global variables
-configuration: undefined;
+var configuration = undefined;
 
 // Initialize QAID system
-jQuery(document).ready(function() {
-	loadResources();
+function initializeQAID() {
 	createDialog();
-	if(configuration) {
+	loadResources(function() {
 		window.setInterval(update, 2000);
-	}
-});
+		console.log("QAID user script finished processing");
+	});
+}
 
 // Perform (periodic) updates
 function update() {
@@ -71,7 +72,7 @@ function validateUserStory() {
 	var validationMessage = "";
 	configuration.userStory.validations.forEach(function(validation) {
 		try {
-			if((new RegExp(validation.regex, validation.flags)).test(userStoryText)) {
+			if(!(new RegExp(validation.regex, validation.flags)).test(userStoryText)) {
 				validationMessage += " Failed: " + validation.description;
 			}
 		} catch(e) {
@@ -81,7 +82,7 @@ function validateUserStory() {
 	});
 
 	// Add result in QAID dialog
-	jQuery("#" + QAID_MESSAGE_ID).text(validationMessage);
+	document.getElementById(QAID_MESSAGE_ID).textContent = validationMessage;
 }
 
 // Activate beautifier button for user story
@@ -105,9 +106,16 @@ function activateBeautifierButtonForType(type) {
 	}
 
 	// Create/activate beautifier button in dialog
-	if(jQuery("#" + QAID_BEAUTIFIER_ID).length === 0) {
-		jQuery("#" + JIRA_SUMMARY_ID + " .inline-edit-fields").append("<span id=\"" + QAID_BEAUTIFIER_ID + "\" style=\"cursor:pointer;margin-top:1em;\">[Beautify]</span>");
-		jQuery("#" + QAID_BEAUTIFIER_ID).on("click", function(event) { stealthEvent(event, function() { beautifyType(type); }) });
+	if(!document.getElementById(QAID_BEAUTIFIER_ID)) {
+		var button = document.createElement("span");
+		button.setAttribute("id", QAID_BEAUTIFIER_ID);
+		setStyle(button, {
+			"cursor": "pointer",
+			"margin-top": "1em"
+		});
+		button.textContent = "[Beautify]";
+		button.onclick = function(event) { stealthEvent(event, function() { beautifyType(type); }) };
+		document.getElementById(JIRA_SUMMARY_ID).querySelector(".inline-edit-fields").appendChild(button);
 	}
 	activateButton(QAID_BEAUTIFIER_ID, true);
 }
@@ -132,7 +140,7 @@ function beautifyType(type) {
 	}
 
 	// Update text
-	jQuery("#" + JIRA_EDIT_ID).val(beautifiedText);
+	document.getElementById(JIRA_EDIT_ID).value = beautifiedText;
 }
 
 // Get beautified user story text
@@ -190,8 +198,9 @@ function jiraShowsLTC() {
 
 // Check if Jira shows specified @type
 function jiraShowsType(type) {
-	if(jQuery("#type-val").length > 0) {
-		return (new RegExp(type)).test(jQuery("#type-val").text());
+	var typeValue = document.getElementById("type-val");
+	if(typeValue) {
+		return (new RegExp(type)).test(typeValue.textContent);
 	} 
 	return false;
 }
@@ -208,7 +217,7 @@ function jiraShowsEditableLTC() {
 
 // Check if Jira shows @type as editable field
 function jiraShowsEditableType(type) {
-	return jiraShowsType(type) && jQuery("#" + JIRA_EDIT_ID).length > 0;
+	return jiraShowsType(type) && document.getElementById(JIRA_EDIT_ID);
 }
 
 // Answer the text of the user story (or undefined if none is shown)
@@ -230,13 +239,15 @@ function getTextForType(type) {
 	}
 
 	// Validate if summary field is present
-	if(jQuery("#" + JIRA_SUMMARY_ID).length > 0) {
+	var summary = document.getElementById(JIRA_SUMMARY_ID);
+	if(summary) {
 
 		// Retrieve summary text (in edit or in view mode)
-		if(jQuery("#" + JIRA_EDIT_ID).length > 0) {
-			return jQuery("#" + JIRA_EDIT_ID).val();
+		var edit = document.getElementById(JIRA_EDIT_ID);
+		if(edit) {
+			return edit.value;
 		} else {
-			return jQuery("#" + JIRA_SUMMARY_ID).text();
+			return summary.textContent;
 		}
 	}
 
@@ -245,14 +256,26 @@ function getTextForType(type) {
 
 // Create dialog on top of screen
 function createDialog() {
-	var dialogNode = document.createElement("div");
-	dialogNode.setAttribute("id", QAID_DIALOG_ID);
-	var style = dialogStyle();
-	Object.keys(style).forEach(function(key) {
-		dialogNode.style[key] = style[key];
+	var dialog = document.createElement("div");
+	dialog.setAttribute("id", QAID_DIALOG_ID);
+	setStyle(dialog, {
+		position: "absolute",
+		top: "4px",
+		left: "40%",
+		width: "20%",
+		backgroundColor: "rgba(255, 255, 0, 0.9)"
 	});
-	document.body.appendChild(dialogNode);
-	jQuery("#" + QAID_DIALOG_ID).append("<span id=\"" + QAID_MESSAGE_ID + "\"></span>");
+	var message = document.createElement("span");
+	message.setAttribute("id", QAID_MESSAGE_ID);
+	dialog.appendChild(message);
+	document.body.appendChild(dialog);
+}
+
+// Set style onto element
+function setStyle(element, style) {
+	Object.keys(style).forEach(function(key) {
+		element.style[key] = style[key];
+	});
 }
 
 // Perform event handler without Jira noticing
@@ -286,29 +309,37 @@ function stealthEvent(event, func) {
 
 // Activate buttons in dialog
 function activateButton(buttonId, active) {
-	jQuery("#" + buttonId).css("display", active ? "inline" : "none");
-}
-
-// Style definition of dialog
-function dialogStyle() {
-	return {
-		position: "absolute",
-		top: "4px",
-		left: "40%",
-		width: "20%",
-		backgroundColor: "rgba(255, 255, 0, 0.9)"
-	};
+	var button = document.getElementById(buttonId);
+	if(button) {
+		button.style["display"] =  active ? "inline" : "none";
+	}
 }
 
 // Load resources from GitHub
-function loadResources() {
-console.log(document.body);
-	jQuery = document.body.jQuery;
-	jQuery.getJSON("https://raw.githubusercontent.com/ErikOnBike/qaid/master/configuration.json", function(newConfiguration) {
-		configuration = newConfiguration;
+function loadResources(callback) {
+	var jsonRequest = new XMLHttpRequest();
+	jsonRequest.url = "https://raw.githubusercontent.com/ErikOnBike/qaid/master/configuration.json";
+	jsonRequest.onload = function() {
+		try {
+			configuration = JSON.parse(this.responseText);
+		} catch(e) {
+			console.log("Failed to read configuration");
+			return;
+		}
+		if(!configuration.userStory || !configuration.ltc) {
+			console.log("Invalid configuration (userStory or ltc missing)");
+			return;
+		}
 
+		// Wash and clean configuration
+		denormalizeBeautifiers();
+		removeUnknownBeautifiers();
+		setSpecialBeautifiers();
 
-	});
+		callback();
+	};
+	jsonRequest.open("get", jsonRequest.url, true);
+	jsonRequest.send();
 }
 
 // De-normalize beautifiers
@@ -367,5 +398,9 @@ function setSpecialBeautifiers() {
 	configuration.ltc.beautifiers.forEach(setSpecialBeautifier);
 }
 
-// Show finished reading user script
-console.log("QAID user script finished processing");
+// Finish handling user script
+if(document.readyState === "complete") {
+	initializeQAID();
+} else {
+	window.addEventListener("load", initializeQAID, false);
+}
