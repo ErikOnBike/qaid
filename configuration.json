@@ -10,9 +10,9 @@
       {
         "name": "capitalize",
         "description": "Capitalize first character.",
-        "regex": "^(.)(.*)$",
+        "regex": "^.",
         "flags": "",
-        "replace": "$U1$2"
+        "replace": "upperCase"
       }
   ],
   "userStory": {
